@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { redirect, useRouter, useSearchParams } from "next/navigation";
 import { signIn, signUp } from "@/lib/actions/auth-actions";
 import { signInSocial } from "@/lib/actions/auth-actions";
 
@@ -42,12 +42,16 @@ export default function AuthClientPage() {
     try {
       if (isSignIn) {
         const result = await signIn(email, password);
-        if (!result.user) {
+        if (result?.user) {
+          router.push("/dashboard");
+        } else {
           setError("Invalid email or password");
         }
       } else {
         const result = await signUp(email, password, name);
-        if (!result.user) {
+        if (result.user) {
+          router.push("/dashboard");
+        } else {
           setError("Unable to create account");
         }
       }
