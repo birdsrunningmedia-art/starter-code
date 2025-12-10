@@ -3,8 +3,11 @@
 import { headers } from "next/headers";
 import { auth } from "../auth";
 import { redirect } from "next/navigation";
+import { db } from "@/db";
+import { userProfile } from "@/db/schema/schema";
 
-export const signUp = async (email: string, password: string, name: string) => {
+// this creates user
+const createUser = async (email: string, password: string, name: string) => {
   const result = await auth.api.signUpEmail({
     body: {
       email,
@@ -14,9 +17,30 @@ export const signUp = async (email: string, password: string, name: string) => {
     },
   });
 
+  const newUser = await db.query.user.findFirst({
+    where: (u, { eq }) => eq(u.email, email),
+  });
+
+  if (!newUser) {
+    throw new Error("Use not found after signup");
+  }
+
+  await db.insert(userProfile).values({
+    userId: newUser.id,
+    role: "user",
+    paymentStatus: "free",
+  });
+
   return result;
 };
 
+// to be removed
+export const signUp = async (email: string, password: string, name: string) => {
+  const result = await createUser(email, password, name);
+  return result;
+};
+
+// to be removed
 export const signIn = async (email: string, password: string) => {
   const result = await auth.api.signInEmail({
     body: {

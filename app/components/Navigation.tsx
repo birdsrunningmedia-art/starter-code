@@ -2,19 +2,37 @@
 
 // This the client side of the layout say you want to toggle anything based on the user session
 
+import { authClient } from "@/lib/auth-client";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 // The server session type
 type Session = typeof auth.$Infer.Session;
 
-export default function Navigation({ session }: { session: Session | null }) {
+export default function Navigation() {
   const pathname = usePathname();
+
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  console.log(session);
 
   const isActive = (path: string) => {
     return pathname === path;
   };
+
+  useEffect(() => {
+    const loadSession = async () => {
+      const { data } = await authClient.getSession();
+      setSession(data);
+      setLoading(false);
+    };
+
+    loadSession();
+  }, []);
+
+  if (loading) return null; // or a skeleton
 
   return (
     <header className="bg-white backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
