@@ -15,5 +15,5 @@ const client = neon(connectionString);
 
 export const db = drizzle(client, {
   schema,
-  logger: true, // Optional: helpful to see SQL queries in your console during dev
+  logger: false, // Optional: helpful to see SQL queries in your console during dev
 });

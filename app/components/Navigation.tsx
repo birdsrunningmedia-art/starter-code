@@ -7,30 +7,18 @@ import { auth } from "@/lib/auth";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Session } from "@/types/session";
 
 // The server session type
-type Session = typeof auth.$Infer.Session;
 
-export default function Navigation() {
+export default function Navigation({ session }: { session: Session | null }) {
   const pathname = usePathname();
 
-  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  console.log(session);
 
   const isActive = (path: string) => {
     return pathname === path;
   };
-
-  useEffect(() => {
-    const loadSession = async () => {
-      const { data } = await authClient.getSession();
-      setSession(data);
-      setLoading(false);
-    };
-
-    loadSession();
-  }, []);
 
   if (loading) return null; // or a skeleton
 

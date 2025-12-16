@@ -8,6 +8,13 @@
       "when": 1765255622079,
       "tag": "0000_fair_human_torch",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1765829440846,
+      "tag": "0001_add_images_table",
+      "breakpoints": true
     }
   ]
 }

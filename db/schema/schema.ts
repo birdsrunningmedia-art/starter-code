@@ -93,6 +93,33 @@ export const userProfile = pgTable("user_profile", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const images = pgTable("images", {
+  id: text("id").primaryKey(), // unique id for the image, e.g., UUID
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }), // link to user
+  url: text("url").notNull(), // where the image is stored (S3/R2/etc.)
+  description: text("description"), // optional description
+  isPublic: boolean("is_public").default(true).notNull(), // optional visibility
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
+
+// Relation from image → user
+export const userImageRelations = relations(images, ({ one }) => ({
+  user: one(user, {
+    fields: [images.userId],
+    references: [user.id],
+  }),
+}));
+
+// Add images relation in user (optional)
+export const userRelationsWithImages = relations(user, ({ many }) => ({
+  images: many(images),
+}));
+
 export const userProfileRelations = relations(userProfile, ({ one }) => ({
   user: one(user, {
     fields: [userProfile.userId],
